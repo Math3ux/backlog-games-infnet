@@ -1,5 +1,7 @@
 package br.edu.infnet.al.matheus_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,7 @@ public class Desenvolvedora {
     private String paisOrigem;
     private LocalDate dataFundacao;
 
+    @JsonIgnore
     private List<Jogo> jogos;
 
     public Desenvolvedora(Long id, String nome, String paisOrigem, LocalDate dataFundacao) {
