@@ -65,6 +65,14 @@ public abstract class Jogo {
         this.id = id;
     }
 
+    public Boolean getIsFinalizado() {
+        return isFinalizado;
+    }
+
+    public void setIsFinalizado(Boolean isFinalizado) {
+        this.isFinalizado = isFinalizado;
+    }
+
     @Override
     public String toString() {
         String status = isFinalizado ? "Finalizado" : "No Backlog";
