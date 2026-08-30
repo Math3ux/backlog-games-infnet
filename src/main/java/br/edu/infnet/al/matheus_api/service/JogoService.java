@@ -1,66 +1,69 @@
 package br.edu.infnet.al.matheus_api.service;
 
+import br.edu.infnet.al.matheus_api.client.CheapSharkClient;
+import br.edu.infnet.al.matheus_api.client.JogoExternoDTO;
 import br.edu.infnet.al.matheus_api.exception.JogoNaoEncontradoException;
 import br.edu.infnet.al.matheus_api.model.Jogo;
+import br.edu.infnet.al.matheus_api.repository.JogoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class JogoService {
 
-    private final Map<Long, Jogo> repositorio = new HashMap<>();
+    private final JogoRepository jogoRepository;
+    private final CheapSharkClient cheapSharkClient;
+
+    public JogoService(JogoRepository jogoRepository, CheapSharkClient cheapSharkClient) {
+        this.jogoRepository = jogoRepository;
+        this.cheapSharkClient = cheapSharkClient;
+    }
 
     public Jogo incluir(Jogo jogo) {
 
-        if (jogo.getId() == null || repositorio.containsKey(jogo.getId())) {
-            throw new IllegalArgumentException("ID inválido ou Jogo já cadastrado.");
+        try {
+            List<JogoExternoDTO> resultados = cheapSharkClient.buscarJogosPorTitulo(jogo.getTitulo());
+
+            if (resultados != null && !resultados.isEmpty()) {
+                jogo.setUrlCapa(resultados.get(0).getThumb());
+            }
+
+        } catch (Exception e) {
+            System.out.println("Erro ao buscar dados na API externa: " + e.getMessage());
         }
 
-        repositorio.put(jogo.getId(), jogo);
-        return jogo;
+        return jogoRepository.save(jogo);
     }
 
     public List<Jogo> obterLista() {
-
-        return new ArrayList<>(repositorio.values());
-
+        return jogoRepository.findAll();
     }
 
     public Jogo obterPorId(Long id) {
-
-        return Optional.ofNullable(repositorio.get(id)).orElseThrow(() -> new JogoNaoEncontradoException("Jogo com ID " + id + " não encontrado."));
+        return jogoRepository.findById(id)
+                .orElseThrow(() -> new JogoNaoEncontradoException("Jogo não encontrado."));
     }
 
     public Jogo alterar(Long id, Jogo jogoAtualizado) {
-        obterPorId(id);
-        repositorio.put(id, jogoAtualizado);
-        return jogoAtualizado;
+
+        if (!jogoRepository.existsById(id)) {
+            throw new JogoNaoEncontradoException("Jogo com ID " + id + " não encontrado para alteração.");
+        }
+
+        jogoAtualizado.setId(id);
+
+        return jogoRepository.save(jogoAtualizado);
     }
 
     public void excluir(Long id) {
-        obterPorId(id); // Valida se existe antes de remover
-        repositorio.remove(id);
+        if (!jogoRepository.existsById(id)) {
+            throw new JogoNaoEncontradoException("Jogo não encontrado.");
+        }
+        jogoRepository.deleteById(id);
     }
 
     public List<Jogo> listarBacklog() {
-        return repositorio.values().stream()
-                .filter(jogo -> !jogo.getIsFinalizado())
-                .collect(Collectors.toList());
-    }
-
-    public List<Jogo> ordenarPorNota() {
-        return repositorio.values().stream()
-                .sorted(Comparator.comparing(Jogo::getNota).reversed())
-                .collect(Collectors.toList());
-    }
-
-    public List<String> listarTitulosPorDesenvolvedora(String nomeDev) {
-        return repositorio.values().stream()
-                .filter(jogo -> jogo.getDesenvolvedora() != null)
-                .filter(jogo -> jogo.getDesenvolvedora().getNome().equalsIgnoreCase(nomeDev))
-                .map(Jogo::getTitulo) // Transforma o objeto Jogo em String (apenas o título)
-                .collect(Collectors.toList());
+        return jogoRepository.findByIsFinalizadoFalse();
     }
 }

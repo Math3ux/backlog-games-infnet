@@ -1,13 +1,36 @@
 package br.edu.infnet.al.matheus_api.model;
 
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Jogo {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "O título não pode ser vazio")
     private String titulo;
+
+    @NotNull(message = "O preço é obrigatório")
+    @Min(value = 0, message = "O preço não pode ser negativo")
     private Double preco;
     private Boolean isFinalizado;
     private Integer nota;
 
+    // capa buscada online via API externa.
+    private String urlCapa;
+
+    @ManyToOne
+    @JoinColumn(name = "desenvolvedora_id")
     private Desenvolvedora desenvolvedora;
+
+    public Jogo() {}
 
     public Jogo(Long id, String titulo, Double preco, Boolean isFinalizado, Integer nota) {
         this.id = id;
@@ -72,6 +95,10 @@ public abstract class Jogo {
     public void setIsFinalizado(Boolean isFinalizado) {
         this.isFinalizado = isFinalizado;
     }
+
+    public String getUrlCapa() { return urlCapa; }
+
+    public void setUrlCapa(String urlCapa) { this.urlCapa = urlCapa; }
 
     @Override
     public String toString() {

@@ -4,6 +4,7 @@ import br.edu.infnet.al.matheus_api.model.Jogo;
 import br.edu.infnet.al.matheus_api.model.JogoDigital;
 import br.edu.infnet.al.matheus_api.model.JogoFisico;
 import br.edu.infnet.al.matheus_api.service.JogoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,19 +37,19 @@ public class JogoController {
     }
 
     @PostMapping("/digital")
-    public ResponseEntity<Jogo> incluirDigital(@RequestBody JogoDigital jogo) {
+    public ResponseEntity<Jogo> incluirDigital(@Valid @RequestBody JogoDigital jogo) {
         Jogo salvo = jogoService.incluir(jogo);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
     @PostMapping("/fisico")
-    public ResponseEntity<Jogo> incluirFisico(@RequestBody JogoFisico jogo) {
+    public ResponseEntity<Jogo> incluirFisico(@Valid @RequestBody JogoFisico jogo) {
         Jogo salvo = jogoService.incluir(jogo);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
     @PutMapping("/digital/{id}")
-    public ResponseEntity<Jogo> alterarDigital(@PathVariable Long id, @RequestBody JogoDigital jogoAtualizado) {
+    public ResponseEntity<Jogo> alterarDigital(@PathVariable Long id, @Valid @RequestBody JogoDigital jogoAtualizado) {
         Jogo alterado = jogoService.alterar(id, jogoAtualizado);
         return ResponseEntity.ok(alterado);
     }

@@ -1,10 +1,14 @@
 package br.edu.infnet.al.matheus_api.model;
 
+import jakarta.persistence.Entity;
 
+@Entity
 public class JogoDigital extends Jogo {
     private Double tamanhoDownloadGb;
     private String lojaVirtual;
     private Boolean compativelPortatil;
+
+    public JogoDigital() {}
 
     public JogoDigital(Long id, String titulo, Double preco, Boolean isFinalizado, Integer nota,
                        Double tamanhoDownloadGb, String lojaVirtual, Boolean compativelPortatil) {

@@ -1,9 +1,13 @@
 package br.edu.infnet.al.matheus_api.model;
 
+import jakarta.persistence.Entity;
 
+@Entity
 public class JogoFisico extends Jogo {
     private String estadoConservacao;
     private Boolean possuiCaixa;
+
+    public JogoFisico() {}
 
     public JogoFisico(Long id, String titulo, Double preco, Boolean isFinalizado, Integer nota,
                       String estadoConservacao, Boolean possuiCaixa) {
