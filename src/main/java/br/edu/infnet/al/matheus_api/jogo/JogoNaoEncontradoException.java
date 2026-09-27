@@ -1,4 +1,4 @@
-package br.edu.infnet.al.matheus_api.exception;
+package br.edu.infnet.al.matheus_api.jogo;
 
 public class JogoNaoEncontradoException extends RuntimeException {
     public JogoNaoEncontradoException(String mensagem) {

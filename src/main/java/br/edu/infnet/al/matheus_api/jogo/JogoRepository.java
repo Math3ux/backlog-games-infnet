@@ -1,6 +1,5 @@
-package br.edu.infnet.al.matheus_api.repository;
+package br.edu.infnet.al.matheus_api.jogo;
 
-import br.edu.infnet.al.matheus_api.model.Jogo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

@@ -1,4 +1,4 @@
-package br.edu.infnet.al.matheus_api.model;
+package br.edu.infnet.al.matheus_api.jogo;
 
 import jakarta.persistence.Entity;
 

@@ -1,6 +1,7 @@
-package br.edu.infnet.al.matheus_api.model;
+package br.edu.infnet.al.matheus_api.jogo;
 
 
+import br.edu.infnet.al.matheus_api.desenvolvedora.Desenvolvedora;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

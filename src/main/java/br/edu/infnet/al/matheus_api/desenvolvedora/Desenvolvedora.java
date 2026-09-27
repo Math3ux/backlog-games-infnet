@@ -1,5 +1,6 @@
-package br.edu.infnet.al.matheus_api.model;
+package br.edu.infnet.al.matheus_api.desenvolvedora;
 
+import br.edu.infnet.al.matheus_api.jogo.Jogo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

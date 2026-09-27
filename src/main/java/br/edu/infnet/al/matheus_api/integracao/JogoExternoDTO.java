@@ -1,4 +1,4 @@
-package br.edu.infnet.al.matheus_api.client;
+package br.edu.infnet.al.matheus_api.integracao;
 
 public class JogoExternoDTO {
     private String thumb;

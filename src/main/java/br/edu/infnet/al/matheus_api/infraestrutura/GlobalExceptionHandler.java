@@ -1,5 +1,6 @@
-package br.edu.infnet.al.matheus_api.exception;
+package br.edu.infnet.al.matheus_api.infraestrutura;
 
+import br.edu.infnet.al.matheus_api.jogo.JogoNaoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

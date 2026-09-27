@@ -1,10 +1,7 @@
-package br.edu.infnet.al.matheus_api.service;
+package br.edu.infnet.al.matheus_api.jogo;
 
-import br.edu.infnet.al.matheus_api.client.CheapSharkClient;
-import br.edu.infnet.al.matheus_api.client.JogoExternoDTO;
-import br.edu.infnet.al.matheus_api.exception.JogoNaoEncontradoException;
-import br.edu.infnet.al.matheus_api.model.Jogo;
-import br.edu.infnet.al.matheus_api.repository.JogoRepository;
+import br.edu.infnet.al.matheus_api.integracao.CheapSharkClient;
+import br.edu.infnet.al.matheus_api.integracao.JogoExternoDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

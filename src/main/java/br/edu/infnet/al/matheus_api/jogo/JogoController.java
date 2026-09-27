@@ -1,9 +1,5 @@
-package br.edu.infnet.al.matheus_api.controller;
+package br.edu.infnet.al.matheus_api.jogo;
 
-import br.edu.infnet.al.matheus_api.model.Jogo;
-import br.edu.infnet.al.matheus_api.model.JogoDigital;
-import br.edu.infnet.al.matheus_api.model.JogoFisico;
-import br.edu.infnet.al.matheus_api.service.JogoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

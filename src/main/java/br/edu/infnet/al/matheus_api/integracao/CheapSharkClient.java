@@ -1,4 +1,4 @@
-package br.edu.infnet.al.matheus_api.client;
+package br.edu.infnet.al.matheus_api.integracao;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
