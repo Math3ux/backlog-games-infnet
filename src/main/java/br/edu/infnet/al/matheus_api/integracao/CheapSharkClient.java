@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
-@FeignClient(name = "cheapshark", url = "https://www.cheapshark.com/api/1.0", configuration = FeignConfig.class)
+@FeignClient(name = "integracao-service", url = "${servico.integracao.url}")
 public interface CheapSharkClient {
 
-    @GetMapping("/games")
-    List<JogoExternoDTO> buscarJogosPorTitulo(@RequestParam("title") String titulo);
+    @GetMapping("/api/externa/jogos")
+    List<JogoExternoDTO> buscarJogosPorTitulo(@RequestParam("titulo") String titulo);
 }
