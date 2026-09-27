@@ -1,69 +1,23 @@
-# 🎮 API de Gerenciamento de Backlog de Jogos
+# Matheus API - Etapa 1: Organização Arquitetural
 
-Projeto desenvolvido como avaliação acadêmica, consistindo em uma API RESTful em Java e Spring Boot para o gerenciamento de catálogos e backlogs de jogos (Físicos e Digitais). O sistema evoluiu progressivamente cobrindo fundamentos de Orientação a Objetos até integrações Externas.
+## Identificação dos módulos da aplicação
 
-## 🛠️ Tecnologias Utilizadas
+A aplicação foi reorganizada para utilizar uma arquitetura orientada a domínio, abandonando a separação estritamente técnica baseada no modelo MVC. Foram identificados três módulos principais:
 
-* **Linguagem:** Java 21
-* **Framework:** Spring Boot 3.3.2
-* **Persistência:** Spring Data JPA / Hibernate
-* **Banco de Dados:** H2 Database (In-Memory)
-* **Integração Externa:** Spring Cloud OpenFeign
-* **Documentação:** Swagger / OpenAPI (Springdoc)
-* **Validação:** Jakarta Bean Validation
+* **Jogo** — Responsável pelo registo, manutenção e consulta do catálogo de jogos internos da aplicação (incluindo as especificidades de jogos físicos e digitais).
+* **Desenvolvedora** — Responsável por gerir os dados das empresas que produzem os jogos e os seus relacionamentos.
+* **Integração** — Responsável por toda a comunicação externa, especificamente a consulta de dados à API pública da CheapShark.
 
----
+## Análise de dependências
 
-## 📈 Evolução do Projeto (Tags)
+Na estrutura atual, os módulos relacionam-se internamente, o que caracteriza o acoplamento da aplicação:
 
-O projeto foi construído em quatro etapas, todas registradas e acessíveis via tags no repositório:
+**Jogo → Integração**
+O módulo de `Jogo` precisa de invocar os serviços do módulo de `Integração` para enriquecer os dados ou validar informações (através do `JogoExternoDTO`) consultando a API da CheapShark antes de persistir um jogo localmente.
 
-### Orientação a Objetos Avançada
-* Criação do modelo de domínio com as entidades `Desenvolvedora`, `Jogo` (Abstrata), `JogoDigital` e `JogoFisico`.
-* Implementação de herança, encapsulamento e polimorfismo.
-* Relacionamento bidirecional Um-para-Muitos (`Desenvolvedora` -> `Jogos`).
-* Uso de tipos variados (String, Long, Double, Boolean, Integer, LocalDate) e sobrescrita do método `toString()`.
+## Candidato a serviço independente
 
-### Collections, Streams e Camada de Serviço
-* Encapsulamento da lógica de negócios na classe `JogoService`.
-* Persistência temporária estruturada via `Map`.
-* Manipulação avançada de coleções utilizando a API de **Streams e Lambdas** (filtragem de backlog, ordenação por nota, transformação de dados).
-* Tratamento customizado de exceções (`JogoNaoEncontradoException`).
-
-### API REST com Spring Boot
-* Exposição das regras de negócio via requisições HTTP (GET, POST, PUT, DELETE) na camada de `Controller`.
-* Configuração do `GlobalExceptionHandler` (ControllerAdvice) para garantir códigos HTTP semânticos (200, 201, 204, 400, 404).
-* Geração automática e interativa de documentação com **Swagger UI**.
-* Injeção de dependências realizada via construtores (melhor prática).
-
-### JPA, Validações e Banco de Dados
-* Refatoração da persistência de memória (Map) para o banco relacional **H2**.
-* Mapeamento ORM utilizando anotações JPA (`@Entity`, `@OneToMany`, `@ManyToOne`, `@Inheritance`).
-* Resolução de referências circulares de JSON usando `@JsonIgnore`.
-* Implementação da interface `JpaRepository` com consultas derivadas (`findByIsFinalizadoFalse`).
-* Proteção dos *endpoints* utilizando Bean Validation (`@NotNull`, `@NotBlank`, `@Min`).
-
-### 🚀 Integração com API Externa
-Foi implementada uma integração com a **API pública do CheapShark**. Ao cadastrar um novo jogo enviando apenas o título via POST, a API utiliza o **OpenFeign** para realizar uma chamada externa, intercepta a requisição para injetar o `User-Agent` exigido pelo provedor, captura a URL da capa oficial do jogo e salva automaticamente no banco de dados H2.
-
----
-
-## ⚙️ Como Executar e Testar
-
-1. Clone o repositório.
-2. Atualize as dependências do Maven.
-3. Execute a classe principal `MatheusApiApplication.java` pela sua IDE.
-
-**Acessando a Documentação (Swagger):**
-Com a aplicação em execução, abra o navegador e acesse:
-> `http://localhost:8080/swagger-ui.html`
-
-Nesta interface, você poderá realizar requisições POST para `/api/jogos/digital` ou `/api/jogos/fisico` e testar todas as funcionalidades visualmente.
-
-**Acessando o Banco de Dados (H2 Console):**
-Para consultar as tabelas geradas e os dados persistidos:
-1. Acesse: `http://localhost:8080/h2-console`
-2. Utilize as credenciais:
-    * **JDBC URL:** `jdbc:h2:mem:backlogdb`
-    * **User Name:** `sa`
-    * **Password:** `password`
+* **Funcionalidade escolhida:** Consulta a informações externas (Módulo de `Integração` / CheapShark).
+* **Responsabilidade:** Realizar chamadas de rede a fornecedores externos (CheapShark API), tratar as respostas e disponibilizar esses dados de forma limpa e padronizada.
+* **Por que poderia ser executada separadamente:** A comunicação com APIs externas é propensa a falhas de rede, lentidão e bloqueios por limite de taxa (rate limiting). Se esta responsabilidade for isolada num microsserviço, a aplicação principal poderá continuar a gerir o catálogo interno de jogos sem ser afetada caso a API externa fique indisponível, aumentando a resiliência do sistema.
+* **Partes que dependem dela:** Atualmente, as regras de negócio inseridas no módulo de `Jogo` dependem desta funcionalidade para obter dados remotos.
