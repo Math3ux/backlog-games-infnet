@@ -2,6 +2,7 @@ package br.edu.infnet.al.matheus_api.jogo;
 
 import br.edu.infnet.al.matheus_api.integracao.CheapSharkClient;
 import br.edu.infnet.al.matheus_api.integracao.JogoExternoDTO;
+import br.edu.infnet.al.matheus_api.mensageria.JogoEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -11,10 +12,12 @@ public class JogoService {
 
     private final JogoRepository jogoRepository;
     private final CheapSharkClient cheapSharkClient;
+    private final JogoEventPublisher eventPublisher;
 
-    public JogoService(JogoRepository jogoRepository, CheapSharkClient cheapSharkClient) {
+    public JogoService(JogoRepository jogoRepository, CheapSharkClient cheapSharkClient, JogoEventPublisher eventPublisher) {
         this.jogoRepository = jogoRepository;
         this.cheapSharkClient = cheapSharkClient;
+        this.eventPublisher = eventPublisher;
     }
 
     public Jogo incluir(Jogo jogo) {
@@ -30,7 +33,9 @@ public class JogoService {
             System.out.println("Erro ao buscar dados na API externa: " + e.getMessage());
         }
 
-        return jogoRepository.save(jogo);
+        Jogo jogoSalvo = jogoRepository.save(jogo);
+        eventPublisher.publicarJogoCadastrado(jogoSalvo.getTitulo());
+        return jogoSalvo;
     }
 
     public List<Jogo> obterLista() {

@@ -58,3 +58,21 @@ Certifique-se de que os projetos `matheus-api`, `integracao-service` e `config-s
 * **Matheus API (Swagger):** `http://localhost:8080/swagger-ui/index.html`
 * **Integração Service (Swagger):** `http://localhost:8081/swagger-ui/index.html`
 * **Config Server (Propriedades da API):** `http://localhost:8888/matheus-api/prod`
+
+---
+
+## Etapa 4: Comunicação Assíncrona e Processamento em Lote
+
+Nesta última etapa, o ecossistema foi expandido para suportar arquiteturas orientadas a eventos (Event-Driven) e rotinas de processamento massivo de dados em background.
+
+### Evoluções Implementadas
+* **Mensageria Assíncrona com RabbitMQ:** Configuração do broker **RabbitMQ** via Docker (`rabbitmq:3.13-management-alpine`) e utilização do **Spring AMQP**. Ao cadastrar um novo jogo na `matheus-api`, um evento é publicado de forma não bloqueante na fila durável `jogo.cadastrado.queue` (`JogoEventPublisher`), sendo consumido assincronamente pelo microsserviço `integracao-service` (`JogoEventConsumer` via `@RabbitListener`).
+* **Processamento em Lote com Spring Batch:** Implementação de um Job completo de importação em massa (`importarJogosJob`) na `matheus-api`:
+    * **ItemReader (`FlatFileItemReader`):** Leitura parametrizada do arquivo `jogos-importacao.csv`.
+    * **ItemProcessor:** Higienização e enriquecimento dos registros lidos com marcação de lote.
+    * **ItemWriter:** Persistência transacional em blocos (*chunks*) diretamente no PostgreSQL.
+* **Gatilho sob Demanda:** Exposição do endpoint `POST /batch/importar-jogos` (`BatchController`) para acionamento do Job via REST/Swagger e auditoria automática de execução nas tabelas de metadados (`BATCH_JOB_EXECUTION`).
+
+### Endpoints Adicionais da Etapa 4
+* **Disparo do Spring Batch:** `POST http://localhost:8080/batch/importar-jogos`
+* **Painel de Gerenciamento RabbitMQ:** `http://localhost:15672` (Credenciais: `guest` / `guest`)

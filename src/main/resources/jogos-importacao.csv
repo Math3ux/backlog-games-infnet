@@ -1,0 +1,5 @@
+titulo,preco,isFinalizado,nota,tamanhoDownloadGb,lojaVirtual,compativelPortatil
+Control Ultimate Edition,129.90,true,10,42.5,Steam,true
+Silent Hill f,299.90,false,9,55.0,Steam,false
+Hollow Knight,46.99,true,10,9.0,Steam,true
+Cyberpunk 2077,199.90,false,9,70.0,GOG,true
