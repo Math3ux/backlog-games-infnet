@@ -1,0 +1,70 @@
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: matheus_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - microsservicos-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d matheus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  config-server:
+    build: ../config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    networks:
+      - microsservicos-net
+
+  integracao-service:
+    build: ../integracao-service
+    container_name: integracao-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      CONFIG_SERVER_URL: http://config-server:8888
+      CHEAPSHARK_API_URL: https://www.cheapshark.com/api/1.0
+    depends_on:
+      - config-server
+    networks:
+      - microsservicos-net
+
+  matheus-api:
+    build: .
+    container_name: matheus-api
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      CONFIG_SERVER_URL: http://config-server:8888
+      DB_URL: jdbc:postgresql://postgres-db:5432/matheus_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres_password
+      SERVICO_INTEGRACAO_URL: http://integracao-service:8081
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      integracao-service:
+        condition: service_started
+      config-server:
+        condition: service_started
+    networks:
+      - microsservicos-net
+
+volumes:
+  postgres_data:
+
+networks:
+  microsservicos-net:
+    driver: bridge
